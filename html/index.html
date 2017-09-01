@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background-color: black;
+        color: #55ff55;
+        font-family: monospace;
+        font-size: 13px;
+        padding: 1em;
+      }
+      h3 {
+        margin: .5em 0;
+      }
+      p {
+        line-height: 1.5em;
+      }
+      .date {
+        color: aqua;
+      }
+      .id {
+        color: #FFF;
+      }
+      .date:before,
+      .id:before {
+        content: '[';
+      }
+      .date:after,
+      .id:after {
+        content: '] ';
+      }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <article>
+      <h3>Photobooth logger : display all the events received by the server.</h3>
+    </article>
+    
+    <script>
+      var terminal = document.querySelector('article');
+      
+      function log (logDetail) {
+        var date = '<span class="date">' + logDetail.date + '</span>';
+        var id = '<span class="id">' + logDetail.id + '</span>';
+        var string = '<span class="log">' + logDetail.log + '</span>';
+
+        var line = document.createElement('p');
+        line.innerHTML = date + id + string;
+        terminal.prepend(line);
+
+        console.log(string);
+      }
+      var socket = io('/logger');
+      socket.on('log', log);
+    </script>
+  </body>
+</html>
