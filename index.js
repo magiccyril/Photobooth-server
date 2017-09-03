@@ -24,6 +24,7 @@ app.get(PATH_API_PHOTOS, (req, res) => {
   
   let absolute = (req.query.absolute == 'true' || req.query.absolute == '1') ? true : false;
 
+  files = files.filter(file => file[0] != '.');
   files = files.map(file => {
     let output = absolute ? req.protocol + '://' + req.hostname + '/' : '';
     return output + PHOTDIR + '/' + file
@@ -33,7 +34,6 @@ app.get(PATH_API_PHOTOS, (req, res) => {
 
 const log = (string, socket) => {
   console.log('[' + new Date().toJSON() + '] [' + socket.id + '] ' + string);
-
   logger.emit('log', {
     log: string,
     date: new Date().toJSON(),
