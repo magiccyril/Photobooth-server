@@ -6,6 +6,9 @@ const io = require('socket.io')(http);
 const cors = require('cors');
 const captureImage = require('./commands/capture-image');
 
+// Try to wake up the camera every 10 minutes.
+const noSleep = setInterval(require('./commands/nosleep'), 600000);
+
 var logger = io.of('/logger');
 
 app.use(cors());
