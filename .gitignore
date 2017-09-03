@@ -11,6 +11,7 @@
 
 # public
 /photos/*.jpg
+/photos/*.JPG
 
 # misc
 .DS_Store
