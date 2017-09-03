@@ -61,20 +61,22 @@ const captureImage = (path = '.', callback) => {
   path = Path.normalize(Path.format(Path.parse(path)));
 
   let filename = getFilename();
+  let filepath = path + '/' + filename;
 
-  /*exec('gphoto2 --capture-image-and-download --keep --quiet --filename '+ path +'/%', (error, stdout, stderr) => {
+  exec('gphoto2 --capture-image-and-download --keep --quiet --filename '+ path +'/%f.%C', (error, stdout, stderr) => {
     if (error) {
       let errorMessage = parseError(error.message);
       console.error(errorMessage);
       return;
     }
 
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-  });*/
+    let photoFilename = Path.basename(stdout)
+    console.log(`filename: ${photoFilename}`);
 
-  let filepath = path + '/' + filename;
+    callback(null, photoFilename);
+  });
 
+/*
   request('https://unsplash.it/640/480/?random&blur&' + new Date().getTime())
     .pipe(fs.createWriteStream(filepath))
     .on('error', function(err) {
@@ -83,6 +85,7 @@ const captureImage = (path = '.', callback) => {
     .on('close', function() {
       callback(null, filename);
     });
+*/
 };
 
 module.exports = captureImage;
