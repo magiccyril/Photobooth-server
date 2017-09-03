@@ -10,6 +10,7 @@ var logger = io.of('/logger');
 
 app.use(cors());
 
+const THUMB_PREFIX = 'thumb_';
 const PHOTDIR = 'photos';
 app.use('/' + PHOTDIR, express.static(__dirname + '/' + PHOTDIR));
 
@@ -24,12 +25,18 @@ app.get(PATH_API_PHOTOS, (req, res) => {
   
   let absolute = (req.query.absolute == 'true' || req.query.absolute == '1') ? true : false;
 
-  files = files.filter(file => file[0] != '.');
-  files = files.map(file => {
-    let output = absolute ? req.protocol + '://' + req.hostname + '/' : '';
-    return output + PHOTDIR + '/' + file
-  })
-  res.json(files);
+  res.json(files
+    .filter(file => file[0] != '.')
+    .filter(file => file.substring(0, THUMB_PREFIX.length) === THUMB_PREFIX)
+    .map(file => {
+      let path = absolute ? req.protocol + '://' + req.hostname + '/' : '';
+      let fullFile = file.substring(THUMB_PREFIX.length);
+      
+      return {
+        full: path + PHOTDIR + '/' + fullFile,
+        thumb: path + PHOTDIR + '/' + file,
+      }
+    }));
 });
 
 const log = (string, socket) => {
@@ -65,7 +72,7 @@ io.on('connection', socket => {
     
     let processingTimeout;
 
-    captureImage(__dirname + '/photos/', function(err, filepath) {
+    captureImage(__dirname + '/photos/', THUMB_PREFIX, function(err, filename) {
       if (err) {
         socket.emit('PHOTO_REQUEST_ERROR');
       }
@@ -73,7 +80,7 @@ io.on('connection', socket => {
       clearTimeout(processingTimeout);
       
       socket.emit('PHOTO_REQUEST_RESULT', {
-        path: '/' + PHOTDIR + '/' + filepath
+        path: '/' + PHOTDIR + '/' + THUMB_PREFIX + filename
       });
       
       log('result sent', socket);
